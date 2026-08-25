@@ -2,15 +2,29 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import {  SignUpDto } from './dto/SignUp-Dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ConfirmOtp } from './dto/confirm-otp-Dto';
+import { LogInDto } from './dto/login-Dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post('/signUp')
   create(@Body() signUpDto: SignUpDto) {
     return this.authService.create(signUpDto);
   }
+
+  @Post('/confirm-otp')
+  confirm(@Body() confirmOtp:ConfirmOtp){
+    return this.authService.confirmOtp(confirmOtp)
+  }
+
+
+  @Post()
+  logIn(@Body() loginDto:LogInDto){
+    return this.authService.logIn(loginDto)
+  }
+
 
   @Get()
   findAll() {

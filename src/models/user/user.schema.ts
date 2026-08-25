@@ -6,7 +6,6 @@ import { GENDER, OTP_TYPE, PROVIDER, ROLE } from "src/common/types";
 
 @Schema({ timestamps: true })
 export class User {
-
   readonly _id!: Types.ObjectId;
 
   @Prop({ type: String, required: true, trim: true })
@@ -72,15 +71,19 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// --- pre-save hook: hash password + encrypt mobileNumber ---
-const ENCRYPTION_KEY = process.env.MOBILE_ENCRYPTION_KEY!; // 32-byte key (hex)
 const IV_LENGTH = 16;
 
+// ✅ reads process.env at CALL time, not at import/module-load time
 function encrypt(text: string): string {
+  const encryptionKey = process.env.MOBILE_ENCRYPTION_KEY;
+  if (!encryptionKey) {
+    throw new Error('MOBILE_ENCRYPTION_KEY is not set in environment variables');
+  }
+
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
-    Buffer.from(ENCRYPTION_KEY, 'hex'),
+    Buffer.from(encryptionKey, 'hex'),
     iv,
   );
   let encrypted = cipher.update(text, 'utf8', 'hex');

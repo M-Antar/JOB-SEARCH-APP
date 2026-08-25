@@ -1,5 +1,6 @@
 import {
   Model,
+  HydratedDocument,
   QueryFilter,
   ProjectionType,
   QueryOptions,
@@ -9,16 +10,16 @@ import {
 export class AbstractRepository<T> {
   constructor(private readonly model: Model<T>) {}
 
-  public async create(item: Partial<T>) {
+  public async create(item: Partial<T>): Promise<HydratedDocument<T>> {
     const doc = new this.model(item);
-    return doc.save();
+    return (await doc.save()) as HydratedDocument<T>; // cast the actual save() result
   }
 
   public async getOne(
     filter: QueryFilter<T>,
     projection?: ProjectionType<T>,
     options?: QueryOptions<T>,
-  ) {
+  ): Promise<HydratedDocument<T> | null> {
     return this.model.findOne(filter, projection, options);
   }
 
@@ -26,7 +27,7 @@ export class AbstractRepository<T> {
     filter: QueryFilter<T>,
     updateQuery?: UpdateQuery<T>,
     options?: QueryOptions<T>,
-  ) {
+  ): Promise<HydratedDocument<T> | null> {
     return this.model.findOneAndUpdate(filter, updateQuery, options);
   }
 
@@ -34,7 +35,7 @@ export class AbstractRepository<T> {
     filter: QueryFilter<T>,
     updateQuery: UpdateQuery<T>,
     options: QueryOptions<T> = {},
-  ) {
+  ): Promise<HydratedDocument<T> | null> {
     return this.model.findOneAndUpdate(filter, updateQuery, {
       new: true,
       runValidators: true,
@@ -46,7 +47,7 @@ export class AbstractRepository<T> {
     filter: QueryFilter<T> = {},
     projection?: ProjectionType<T>,
     options?: QueryOptions<T>,
-  ) {
+  ): Promise<HydratedDocument<T>[]> {
     return this.model.find(filter, projection, options);
   }
 }
