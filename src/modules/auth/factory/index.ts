@@ -1,7 +1,7 @@
 import { Auth } from '../entities/auth.entity';
 import { SignUpDto } from '../dto/SignUp-Dto';
 import { GENDER, OTP_TYPE, PROVIDER, ROLE } from 'src/common/types';
-import { generateOtp } from 'src/common/types/otp';
+import { generateOtp } from 'src/common/types';
 
 export class AuthFactoryService {
   createUser(signUpDto: SignUpDto): { user: Auth; plainOtp: string } {

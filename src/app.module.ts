@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import devConfig from './config/dev.config';
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
@@ -16,7 +18,10 @@ import { AuthModule } from './modules/auth/auth.module';
         uri: configService.get('db').url,
       }),
     }),
-    AuthModule
+    AuthModule,
+    UserModule,
+    ScheduleModule.forRoot(),
+    
   ],
   controllers: [AppController],
   providers: [AppService],

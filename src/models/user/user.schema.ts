@@ -23,13 +23,13 @@ export class User {
   @Prop({ type: String, enum: PROVIDER, default: PROVIDER.SYSTEM })
   provider!: PROVIDER;
 
-  @Prop({ type: String, enum: GENDER, required: true })
+  @Prop({ type: String, enum: GENDER })
   gender!: GENDER;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date })
   DOB!: Date;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   mobileNumber!: string;
 
   @Prop({ type: String, enum: ROLE, required: true, trim: true })
@@ -49,12 +49,14 @@ export class User {
 
   @Prop({ type: Date })
   changeCredentialTime!: Date;
+  
+  @Prop({ type: { secure_url: String, public_id: String }, required: false })
+  profilePic?: { secure_url: string; public_id: string };
 
-  @Prop({ type: { secure_url: String, public_id: String } })
-  profilePic!: { secure_url: string; public_id: string };
+  @Prop({ type: { secure_url: String, public_id: String }, required: false })
+  coverPic?: { secure_url: string; public_id: string };
 
-  @Prop({ type: { secure_url: String, public_id: String } })
-  coverPic!: { secure_url: string; public_id: string };
+  readonly username?: string;
 
   @Prop({
     type: [
@@ -73,7 +75,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 const IV_LENGTH = 16;
 
-// ✅ reads process.env at CALL time, not at import/module-load time
+
 function encrypt(text: string): string {
   const encryptionKey = process.env.MOBILE_ENCRYPTION_KEY;
   if (!encryptionKey) {
@@ -90,6 +92,32 @@ function encrypt(text: string): string {
   encrypted += cipher.final('hex');
   return `${iv.toString('hex')}:${encrypted}`;
 }
+function decrypt(cipherText: string): string {
+  const encryptionKey = process.env.MOBILE_ENCRYPTION_KEY;
+  if (!encryptionKey) {
+    throw new Error('MOBILE_ENCRYPTION_KEY is not set in environment variables');
+  }
+
+  const [ivHex, encryptedHex] = cipherText.split(':');
+  if (!ivHex || !encryptedHex) return cipherText; // not encrypted / malformed, return as-is
+
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv(
+    'aes-256-cbc',
+    Buffer.from(encryptionKey, 'hex'),
+    iv,
+  );
+  let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
+
+UserSchema.post('init', function (doc) {
+  if (doc.mobileNumber) {
+    doc.mobileNumber = decrypt(doc.mobileNumber);
+  }
+});
 
 UserSchema.pre('save', async function () {
   if (this.isModified('password')) {
@@ -97,7 +125,7 @@ UserSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, salt);
   }
 
-  if (this.isModified('mobileNumber')) {
+  if (this.isModified('mobileNumber') && this.mobileNumber) {
     this.mobileNumber = encrypt(this.mobileNumber);
   }
 });
