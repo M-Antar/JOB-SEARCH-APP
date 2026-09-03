@@ -7,6 +7,7 @@ import devConfig from './config/dev.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CompanyModule } from './modules/company/company.module';
 
 
 @Module({
@@ -20,6 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     AuthModule,
     UserModule,
+    CompanyModule,
     ScheduleModule.forRoot(),
     
   ],

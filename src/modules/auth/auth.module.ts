@@ -10,6 +10,7 @@ import { User, UserSchema } from 'src/models/user/user.schema';
 import { MailService } from '../mail/mail.service';
 import { GoogleStrategy } from './stratigies/google.strategy';
 import { OtpCleanupTask } from './tasks/otp-cleanup.task';
+import { JwtStrategy } from './stratigies/jwt.strategy';
 
 
 @Module({
@@ -25,6 +26,7 @@ import { OtpCleanupTask } from './tasks/otp-cleanup.task';
     UserRepository,
     MailService,
     JwtService,
+    JwtStrategy,
     GoogleStrategy, // ✅ this was the actual missing piece causing your error
     OtpCleanupTask,
   ],
