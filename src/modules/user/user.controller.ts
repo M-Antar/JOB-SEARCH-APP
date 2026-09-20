@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query, UseInter
 import { UserService } from './user.service';
 
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { multerMemoryOptions } from 'src/common/types';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 
 @Controller('user')
 export class UserController {

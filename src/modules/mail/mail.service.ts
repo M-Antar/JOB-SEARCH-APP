@@ -19,9 +19,6 @@ export class MailService {
     console.log('SMTP_PASS:', process.env.SMTP_PASS ? '[SET]' : '[MISSING]');
   }
 
-  /**
-   * Sends the PLAIN otp to the user's email. Never pass the hash here.
-   */
   async sendOtpEmail(to: string, otp: string, expiryMinutes = 10) {
     await this.transporter.sendMail({
       from: process.env.MAIL_FROM,
@@ -29,6 +26,19 @@ export class MailService {
       subject: 'Verify your email',
       text: `Your verification code is ${otp}. It expires in ${expiryMinutes} minutes.`,
       html: `<p>Your verification code is <b>${otp}</b>. It expires in ${expiryMinutes} minutes.</p>`,
+    });
+  }
+
+  async sendMail(
+    to: string,
+    subject: string,
+    html: string,
+  ) {
+    await this.transporter.sendMail({
+      from: process.env.MAIL_FROM,
+      to,
+      subject,
+      html,
     });
   }
 }

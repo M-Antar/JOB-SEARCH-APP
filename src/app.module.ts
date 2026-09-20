@@ -8,6 +8,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CompanyModule } from './modules/company/company.module';
+import { JobModule } from './modules/job/job.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 
 @Module({
@@ -22,6 +25,9 @@ import { CompanyModule } from './modules/company/company.module';
     AuthModule,
     UserModule,
     CompanyModule,
+    JobModule,
+    AdminModule,
+    ChatModule,
     ScheduleModule.forRoot(),
     
   ],
