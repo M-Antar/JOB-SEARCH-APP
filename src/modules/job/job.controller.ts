@@ -11,6 +11,7 @@ import { multerCVOptions, multerMemoryOptions, ROLE } from 'src/common/types';
 import { RolesGuard } from 'src/gurads/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppChangeStatus } from './dto/apllication-statues.dto';
+import { RecommendJobDto } from './dto/recommend-job.dto';
 
 @Controller('job')
 export class JobController {
@@ -18,6 +19,13 @@ export class JobController {
     private readonly jobService: JobService,
     private readonly JobFactoryService: JobFactoryService,
   ) {}
+
+
+   @Post("recommend")
+  @UseGuards(AuthGuard('jwt'))
+  async findRecommend(@Body() recommendJobDto: RecommendJobDto) {
+    return this.jobService.recommendJob(recommendJobDto);
+  }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
